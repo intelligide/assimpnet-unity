@@ -1,9 +1,9 @@
 # AssimpNet for Unity
 
 ### Current project status ###
-[![Build Status](https://intelligide.visualstudio.com/Assimp%20for%20Unity/_apis/build/status/intelligide.assimp-unity?branchName=master)](https://intelligide.visualstudio.com/Assimp%20for%20Unity/_build/latest?definitionId=1&branchName=master)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/ac1e60e80292426abf975b7172266eed)](https://www.codacy.com/app/intelligide/assimp-unity?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=intelligide/assimp-unity&amp;utm_campaign=Badge_Grade)
-[![Total alerts](https://img.shields.io/lgtm/alerts/g/intelligide/assimp-unity.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/intelligide/assimp-unity/alerts/)
+[![Build Status](https://intelligide.visualstudio.com/Assimp%20for%20Unity/_apis/build/status/intelligide.assimpnet-unity?branchName=master)](https://intelligide.visualstudio.com/Assimp%20for%20Unity/_build/latest?definitionId=1&branchName=master)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/ac1e60e80292426abf975b7172266eed)](https://www.codacy.com/app/intelligide/assimpnet-unity?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=intelligide/assimpnet-unity&amp;utm_campaign=Badge_Grade)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/intelligide/assimpnet-unity.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/intelligide/assimpnet-unity/alerts/)
 
 ## Introduction ##
 
