@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>netstandard1.3;net35;net4;</TargetFrameworks>
@@ -13,7 +13,6 @@
     <Version>5.0.0-beta1</Version>
     <PackageLicenseFile>License.txt</PackageLicenseFile>
     <Copyright>Copyright © 2012-2020 Nicholas Woodfield</Copyright>
-    <PackageIcon>logo.png</PackageIcon>
     <PackageProjectUrl>https://bitbucket.org/Starnick/assimpnet</PackageProjectUrl>
     <RepositoryUrl>https://bitbucket.org/Starnick/assimpnet.git</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
@@ -34,14 +33,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="..\logo.png" Link="nuget\logo.png" PackagePath=""/>
     <Content Include="..\ChangeLog.txt" Link="nuget\ChangeLog.txt" PackagePath="" />
     <Content Include="..\License.txt" Link="nuget\License.txt" PackagePath="" />
-    <Content Include="..\Docs\AssimpNet Documentation %28October 2018%29.chm" Link="nuget\AssimpNet Documentation %28October 2018%29.chm" PackagePath="" />
-    <Content Include="..\libs\Assimp\win-x64\assimp.dll" Link="nuget\runtimes\win-x64\native\assimp.dll" PackagePath="runtimes\win-x64\native" />
-    <Content Include="..\libs\Assimp\win-x86\assimp.dll" Link="nuget\runtimes\win-x86\native\assimp.dll" PackagePath="runtimes\win-x86\native" />
-    <Content Include="..\libs\Assimp\linux-x64\libassimp.so" Link="nuget\runtimes\linux-x64\native\libassimp.so" PackagePath="runtimes\linux-x64\native" />
-    <Content Include="..\libs\Assimp\osx-x64\libassimp.dylib" Link="nuget\runtimes\osx-x64\native\libassimp.dylib" PackagePath="runtimes\osx-x64\native" />
     <Content Include="AssimpNet.targets" Link="nuget\build\AssimpNet.targets" PackagePath="build" />
   </ItemGroup>
 

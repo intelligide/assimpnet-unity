@@ -168,27 +168,6 @@ namespace Assimp.Test
         }
 
         [Test]
-        public void TestFreeLogStreams()
-        {
-            ConsoleLogStream console1 = new ConsoleLogStream();
-            ConsoleLogStream console2 = new ConsoleLogStream();
-            ConsoleLogStream console3 = new ConsoleLogStream();
-
-            console1.Attach();
-            console2.Attach();
-            console3.Attach();
-
-            AssimpLibrary.Instance.FreeLibrary();
-
-            IEnumerable<LogStream> logs = LogStream.GetAttachedLogStreams();
-
-            Assert.IsEmpty(logs);
-            Assert.IsFalse(console1.IsAttached);
-            Assert.IsFalse(console2.IsAttached);
-            Assert.IsFalse(console3.IsAttached);
-        }
-
-        [Test]
         public void TestImportFromFile()
         {
             String path = Path.Combine(TestHelper.RootPath, "TestFiles/sphere.obj");
