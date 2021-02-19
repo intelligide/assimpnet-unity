@@ -10,3 +10,10 @@ indent_size = 4
 [azure-pipelines.yml]
 indent_style = space
 indent_size = 2
+
+# Xml project files
+[*.{csproj,vbproj,vcxproj,vcxproj.filters,proj,nativeproj,locproj,targets}]
+indent_size = 2
+
+[*.{csproj,vbproj,proj,nativeproj,locproj}]
+charset = utf-8-bom

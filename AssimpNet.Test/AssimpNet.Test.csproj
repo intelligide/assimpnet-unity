@@ -5,6 +5,7 @@
     <RootNamespace>Assimp.Test</RootNamespace>
     <LangVersion>latest</LangVersion>
     <ForceCopyNativeAssimp>true</ForceCopyNativeAssimp>
+    <Platforms>AnyCPU;x64;x86</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
@@ -52,5 +53,5 @@
   </ItemGroup>
 
   <Import Project="$(ProjectDir)..\AssimpNet\AssimpNet.targets" />
-  
+
 </Project>
