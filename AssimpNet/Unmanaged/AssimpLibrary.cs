@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2012-2018 AssimpNet - Nicholas Woodfield
+* Copyright (c) 2012-2020 AssimpNet - Nicholas Woodfield
 * 
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,6 @@ namespace Assimp.Unmanaged
     /// <summary>
     /// Singleton that governs access to the unmanaged Assimp library functions.
     /// </summary>
-    [CLSCompliant(false)]
     public sealed class AssimpLibrary
     {
         private static readonly Object s_sync = new Object();
@@ -57,9 +56,7 @@ namespace Assimp.Unmanaged
                 lock(s_sync)
                 {
                     if(s_instance == null)
-                    {
                         s_instance = CreateInstance();
-                    }
 
                     return s_instance;
                 }
@@ -123,7 +120,6 @@ namespace Assimp.Unmanaged
         public IntPtr ImportFileFromStream(Stream stream, PostProcessSteps flags, String formatHint, IntPtr propStore)
         {
             byte[] buffer = MemoryHelper.ReadStreamFully(stream, 0);
-
             return Functions.aiImportFileFromMemoryWithProperties(buffer, (uint) buffer.Length, (uint) flags, formatHint, propStore);
         }
 
@@ -135,9 +131,7 @@ namespace Assimp.Unmanaged
         public void ReleaseImport(IntPtr scene)
         {
             if(scene == IntPtr.Zero)
-            {
                 return;
-            }
 
             Functions.aiReleaseImport(scene);
         }
@@ -151,9 +145,7 @@ namespace Assimp.Unmanaged
         public IntPtr ApplyPostProcessing(IntPtr scene, PostProcessSteps flags)
         {
             if(scene == IntPtr.Zero)
-            {
                 return IntPtr.Zero;
-            }
 
             return Functions.aiApplyPostProcessing(scene, (uint) flags);
         }
@@ -171,9 +163,7 @@ namespace Assimp.Unmanaged
             int count = (int) Functions.aiGetExportFormatCount().ToUInt32();
 
             if(count == 0)
-            {
                 return new ExportFormatDescription[0];
-            }
 
             ExportFormatDescription[] descriptions = new ExportFormatDescription[count];
 
@@ -203,16 +193,12 @@ namespace Assimp.Unmanaged
         public ExportDataBlob ExportSceneToBlob(IntPtr scene, String formatId, PostProcessSteps preProcessing)
         {
             if(String.IsNullOrEmpty(formatId) || scene == IntPtr.Zero)
-            {
                 return null;
-            }
 
             IntPtr blobPtr = Functions.aiExportSceneToBlob(scene, formatId, (uint) preProcessing);
 
             if(blobPtr == IntPtr.Zero)
-            {
                 return null;
-            }
 
             AiExportDataBlob blob = MemoryHelper.Read<AiExportDataBlob>(blobPtr);
             ExportDataBlob dataBlob = new ExportDataBlob(ref blob);
@@ -251,9 +237,7 @@ namespace Assimp.Unmanaged
         public ReturnCode ExportScene(IntPtr scene, String formatId, String fileName, IntPtr fileIO, PostProcessSteps preProcessing)
         {
             if(String.IsNullOrEmpty(formatId) || scene == IntPtr.Zero)
-            {
                 return ReturnCode.Failure;
-            }
 
             return Functions.aiExportSceneEx(scene, formatId, fileName, fileIO, (uint) preProcessing);
         }
@@ -267,9 +251,7 @@ namespace Assimp.Unmanaged
         public IntPtr CopyScene(IntPtr sceneToCopy)
         {
             if(sceneToCopy == IntPtr.Zero)
-            {
                 return IntPtr.Zero;
-            }
 
             IntPtr copiedScene;
 
@@ -298,8 +280,6 @@ namespace Assimp.Unmanaged
         public void EnableVerboseLogging(bool enable)
         {
             Functions.aiEnableVerboseLogging(enable);
-
-            m_enableVerboseLogging = enable;
         }
 
         /// <summary>
@@ -348,11 +328,6 @@ namespace Assimp.Unmanaged
         /// <param name="propertyStore">Pointer to property store</param>
         public void ReleasePropertyStore(IntPtr propertyStore)
         {
-            if(propertyStore == IntPtr.Zero)
-            {
-                return;
-            }
-
             Functions.aiReleasePropertyStore(propertyStore);
         }
 
@@ -364,11 +339,6 @@ namespace Assimp.Unmanaged
         /// <param name="value">Property value</param>
         public void SetImportPropertyInteger(IntPtr propertyStore, String name, int value)
         {
-            if(propertyStore == IntPtr.Zero || String.IsNullOrEmpty(name))
-            {
-                return;
-            }
-
             Functions.aiSetImportPropertyInteger(propertyStore, name, value);
         }
 
@@ -380,11 +350,6 @@ namespace Assimp.Unmanaged
         /// <param name="value">Property value</param>
         public void SetImportPropertyFloat(IntPtr propertyStore, String name, float value)
         {
-            if(propertyStore == IntPtr.Zero || String.IsNullOrEmpty(name))
-            {
-                return;
-            }
-
             Functions.aiSetImportPropertyFloat(propertyStore, name, value);
         }
 
@@ -397,15 +362,11 @@ namespace Assimp.Unmanaged
         public void SetImportPropertyString(IntPtr propertyStore, String name, String value)
         {
             if(propertyStore == IntPtr.Zero || String.IsNullOrEmpty(name))
-            {
                 return;
-            }
 
             AiString str = new AiString();
             if(str.SetString(value))
-            {
                 Functions.aiSetImportPropertyString(propertyStore, name, ref str);
-            }
         }
 
         /// <summary>
@@ -417,9 +378,7 @@ namespace Assimp.Unmanaged
         public void SetImportPropertyMatrix(IntPtr propertyStore, String name, Matrix4x4 value)
         {
             if(propertyStore == IntPtr.Zero || String.IsNullOrEmpty(name))
-            {
                 return;
-            }
 
             Functions.aiSetImportPropertyMatrix(propertyStore, name, ref value);
         }
@@ -445,18 +404,14 @@ namespace Assimp.Unmanaged
                 ReturnCode code = Functions.aiGetMaterialColor(ref mat, key, (uint) texType, texIndex, ptr);
                 Color4D color = new Color4D();
                 if(code == ReturnCode.Success && ptr != IntPtr.Zero)
-                {
                     color = MemoryHelper.Read<Color4D>(ptr);
-                }
 
                 return color;
             }
             finally
             {
                 if(ptr != IntPtr.Zero)
-                {
                     MemoryHelper.FreeMemory(ptr);
-                }
             }
         }
 
@@ -476,7 +431,7 @@ namespace Assimp.Unmanaged
             try
             {
                 ptr = MemoryHelper.AllocateMemory(IntPtr.Size);
-                ReturnCode code = Functions.aiGetMaterialFloatArray(ref mat, key, (uint) texType, texIndex, ptr, ref floatCount);
+                 ReturnCode code = Functions.aiGetMaterialFloatArray(ref mat, key, (uint) texType, texIndex, ptr, ref floatCount);
                 float[] array = null;
                 if(code == ReturnCode.Success && floatCount > 0)
                 {
@@ -542,9 +497,7 @@ namespace Assimp.Unmanaged
             ReturnCode code = Functions.aiGetMaterialProperty(ref mat, key, (uint) texType, texIndex, out ptr);
             AiMaterialProperty prop = new AiMaterialProperty();
             if(code == ReturnCode.Success && ptr != IntPtr.Zero)
-            {
                 prop = MemoryHelper.Read<AiMaterialProperty>(ptr);
-            }
 
             return prop;
         }
@@ -562,9 +515,7 @@ namespace Assimp.Unmanaged
             AiString str;
             ReturnCode code = Functions.aiGetMaterialString(ref mat, key, (uint) texType, texIndex, out str);
             if(code == ReturnCode.Success)
-            {
                 return str.GetString();
-            }
 
             return String.Empty;
         }
@@ -642,9 +593,7 @@ namespace Assimp.Unmanaged
             IntPtr ptr = Functions.aiGetErrorString();
 
             if(ptr == IntPtr.Zero)
-            {
                 return String.Empty;
-            }
 
             return Marshal.PtrToStringAnsi(ptr);
         }
@@ -823,9 +772,7 @@ namespace Assimp.Unmanaged
             IntPtr ptr = Functions.aiGetLegalString();
 
             if(ptr == IntPtr.Zero)
-            {
                 return String.Empty;
-            }
 
             return Marshal.PtrToStringAnsi(ptr);
         }
@@ -855,6 +802,20 @@ namespace Assimp.Unmanaged
         public uint GetVersionRevision()
         {
             return Functions.aiGetVersionRevision();
+        }
+
+        /// <summary>
+        /// Returns the branchname of the Assimp runtime.
+        /// </summary>
+        /// <returns>The current branch name.</returns>
+        public String GetBranchName()
+        {
+            IntPtr ptr = Functions.aiGetBranchName();
+
+            if(ptr == IntPtr.Zero)
+                return String.Empty;
+
+            return Marshal.PtrToStringAnsi(ptr);
         }
 
         /// <summary>
@@ -989,20 +950,22 @@ namespace Assimp.Unmanaged
             public const String aiGetVersionMajor = "aiGetVersionMajor";
             public const String aiGetVersionRevision = "aiGetVersionRevision";
             public const String aiGetCompileFlags = "aiGetCompileFlags";
+            public const String aiGetBranchName = "aiGetBranchName";
 
             #endregion
         }
 
         #endregion
 
-        #region Function
+        #region Function delegates
 
         /// <summary>
         /// Defines all of the delegates that represent the unmanaged assimp functions.
         /// </summary>
         internal static class Functions
         {
-            #region Import
+
+            #region Import Delegates
 
             [DllImport(DefaultLibName, CallingConvention=CallingConvention.Cdecl, EntryPoint=FunctionNames.aiImportFile)]
             public static extern IntPtr aiImportFile([In, MarshalAs(UnmanagedType.LPStr)] String file, uint flags);
@@ -1011,6 +974,7 @@ namespace Assimp.Unmanaged
             public static extern IntPtr aiImportFileEx([In, MarshalAs(UnmanagedType.LPStr)] String file, uint flags, IntPtr fileIO);
 
             [DllImport(DefaultLibName, CallingConvention=CallingConvention.Cdecl, EntryPoint=FunctionNames.aiImportFileExWithProperties)]
+
             public static extern IntPtr aiImportFileExWithProperties([In, MarshalAs(UnmanagedType.LPStr)] String file, uint flag, IntPtr fileIO, IntPtr propStore);
 
             [DllImport(DefaultLibName, CallingConvention=CallingConvention.Cdecl, EntryPoint=FunctionNames.aiImportFileFromMemory)]
@@ -1027,7 +991,7 @@ namespace Assimp.Unmanaged
 
             #endregion
 
-            #region Export 
+            #region Export Delegates
 
             [DllImport(DefaultLibName, CallingConvention=CallingConvention.Cdecl, EntryPoint=FunctionNames.aiGetExportFormatCount)]
             public static extern UIntPtr aiGetExportFormatCount();
@@ -1055,23 +1019,23 @@ namespace Assimp.Unmanaged
 
             #endregion
 
-            #region Logging 
+            #region Logging Delegates
 
             [DllImport(DefaultLibName, CallingConvention=CallingConvention.Cdecl, EntryPoint=FunctionNames.aiAttachLogStream)]
             public static extern void aiAttachLogStream(IntPtr logStreamPtr);
-            
+
             [DllImport(DefaultLibName, CallingConvention=CallingConvention.Cdecl, EntryPoint=FunctionNames.aiEnableVerboseLogging)]
             public static extern void aiEnableVerboseLogging([In, MarshalAs(UnmanagedType.Bool)] bool enable);
-            
+
             [DllImport(DefaultLibName, CallingConvention=CallingConvention.Cdecl, EntryPoint=FunctionNames.aiDetachLogStream)]
             public static extern ReturnCode aiDetachLogStream(IntPtr logStreamPtr);
-            
+
             [DllImport(DefaultLibName, CallingConvention=CallingConvention.Cdecl, EntryPoint=FunctionNames.aiDetachAllLogStreams)]
             public static extern void aiDetachAllLogStreams();
 
             #endregion
 
-            #region Property 
+            #region Property Delegates
 
             [DllImport(DefaultLibName, CallingConvention=CallingConvention.Cdecl, EntryPoint=FunctionNames.aiCreatePropertyStore)]
             public static extern IntPtr aiCreatePropertyStore();
@@ -1093,7 +1057,7 @@ namespace Assimp.Unmanaged
 
             #endregion
 
-            #region Material 
+            #region Material Delegates
 
             [DllImport(DefaultLibName, CallingConvention=CallingConvention.Cdecl, EntryPoint=FunctionNames.aiGetMaterialColor)]
             public static extern ReturnCode aiGetMaterialColor(ref AiMaterial mat, [In, MarshalAs(UnmanagedType.LPStr)] String key, uint texType, uint texIndex, IntPtr colorOut);
@@ -1112,13 +1076,13 @@ namespace Assimp.Unmanaged
 
             [DllImport(DefaultLibName, CallingConvention=CallingConvention.Cdecl, EntryPoint=FunctionNames.aiGetMaterialTexture)]
             public static extern ReturnCode aiGetMaterialTexture(ref AiMaterial mat, TextureType type, uint index, out AiString path, out TextureMapping mapping, out uint uvIndex, out float blendFactor, out TextureOperation textureOp, [In, Out] TextureWrapMode[] wrapModes, out uint flags);
-
+            
             [DllImport(DefaultLibName, CallingConvention=CallingConvention.Cdecl, EntryPoint=FunctionNames.aiGetMaterialTextureCount)]
             public static extern uint aiGetMaterialTextureCount(ref AiMaterial mat, TextureType type);
 
             #endregion
 
-            #region Math 
+            #region Math Delegates
 
             [DllImport(DefaultLibName, CallingConvention=CallingConvention.Cdecl, EntryPoint=FunctionNames.aiCreateQuaternionFromMatrix)]
             public static extern void aiCreateQuaternionFromMatrix(out Quaternion quat, ref Matrix3x3 mat);
@@ -1152,7 +1116,7 @@ namespace Assimp.Unmanaged
 
             #endregion
 
-            #region Error and Info
+            #region Error and Info Delegates
 
             [DllImport(DefaultLibName, CallingConvention=CallingConvention.Cdecl, EntryPoint=FunctionNames.aiGetErrorString)]
             public static extern IntPtr aiGetErrorString();
@@ -1175,7 +1139,7 @@ namespace Assimp.Unmanaged
 
             #endregion
 
-            #region Version Info
+            #region Version Info Delegates
 
             [DllImport(DefaultLibName, CallingConvention=CallingConvention.Cdecl, EntryPoint=FunctionNames.aiGetLegalString)]
             public static extern IntPtr aiGetLegalString();
@@ -1188,6 +1152,9 @@ namespace Assimp.Unmanaged
 
             [DllImport(DefaultLibName, CallingConvention=CallingConvention.Cdecl, EntryPoint=FunctionNames.aiGetVersionRevision)]
             public static extern uint aiGetVersionRevision();
+
+            [DllImport(DefaultLibName, CallingConvention=CallingConvention.Cdecl, EntryPoint=FunctionNames.aiGetBranchName)]
+            public static extern IntPtr aiGetBranchName();
 
             [DllImport(DefaultLibName, CallingConvention=CallingConvention.Cdecl, EntryPoint=FunctionNames.aiGetCompileFlags)]
             public static extern uint aiGetCompileFlags();

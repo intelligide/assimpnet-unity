@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2012-2018 AssimpNet - Nicholas Woodfield
+* Copyright (c) 2012-2020 AssimpNet - Nicholas Woodfield
 * 
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -165,27 +165,6 @@ namespace Assimp.Test
                     Assert.IsTrue(importedFace.Indices[j] == face.Indices[j]);
                 }
             }
-        }
-
-        [Test]
-        public void TestFreeLogStreams()
-        {
-            ConsoleLogStream console1 = new ConsoleLogStream();
-            ConsoleLogStream console2 = new ConsoleLogStream();
-            ConsoleLogStream console3 = new ConsoleLogStream();
-
-            console1.Attach();
-            console2.Attach();
-            console3.Attach();
-
-            AssimpLibrary.Instance.FreeLibrary();
-
-            IEnumerable<LogStream> logs = LogStream.GetAttachedLogStreams();
-
-            Assert.IsEmpty(logs);
-            Assert.IsFalse(console1.IsAttached);
-            Assert.IsFalse(console2.IsAttached);
-            Assert.IsFalse(console3.IsAttached);
         }
 
         [Test]
