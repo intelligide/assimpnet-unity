@@ -3,29 +3,110 @@ trigger:
   - develop
   - release/*
   - feature/*
+  - hotfix/*
 
 pool:
-  vmImage: 'windows-latest'
+  vmImage: 'windows-2019'
 
 variables:
-  solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
+  solution: 'AssimpNet.sln'
   buildConfiguration: 'Release'
+  assimpVersion: 5.0.1
 
-steps:
-  - task: NuGetToolInstaller@1
+stages:
+  - stage: buildAssimp
+    displayName: Build Assimp
+    jobs:
+      - job: buildAssimp
+        displayName: Build Assimp
+        strategy:
+          matrix:
+            x86_64:
+              cmakeGeneratorArch: x64
+              buildArch: x64
+            x86:
+              cmakeGeneratorArch: Win32
+              buildArch: x86
+        steps:
+          - checkout: none
 
-  - task: NuGetCommand@2
-    inputs:
-      restoreSolution: '$(solution)'
+          - bash: curl -L https://github.com/assimp/assimp/archive/v$(assimpVersion).zip -o assimp.zip
+            displayName: Download Assimp sources
 
-  - task: VSBuild@1
-    inputs:
-      solution: '$(solution)'
-      platform: '$(buildPlatform)'
-      configuration: '$(buildConfiguration)'
+          - task: ExtractFiles@1
+            displayName: Extract Assimp sources
+            inputs:
+              archiveFilePatterns: "assimp.zip"
+              destinationFolder:
+              cleanDestinationFolder: false
 
-  - task: VSTest@2
-    inputs:
-      platform: '$(buildPlatform)'
-      configuration: '$(buildConfiguration)'
+          - task: CMake@1
+            displayName: Configure Assimp
+            inputs:
+              workingDirectory: assimp-$(assimpVersion)
+              cmakeArgs: -G "Visual Studio 16 2019" -A $(cmakeGeneratorArch) -S . -B . -DCMAKE_BUILD_TYPE=MinSizeRel
+                -DASSIMP_BUILD_TESTS=OFF -DASSIMP_BUILD_ASSIMP_TOOLS=OFF -DBUILD_SHARED_LIBS=ON
+                -DLIBRARY_SUFFIX="" -DINJECT_DEBUG_POSTFIX=OFF -DCMAKE_INSTALL_PREFIX=$(Build.BinariesDirectory)
+
+          - task: MSBuild@1
+            displayName: Build Assimp
+            inputs:
+              solution: assimp-$(assimpVersion)/Assimp.sln
+              msbuildArchitecture: $(buildArch)
+              configuration: MinSizeRel
+
+          - task: MSBuild@1
+            displayName: Install Assimp
+            inputs:
+              solution: assimp-$(assimpVersion)/INSTALL.vcxproj
+              msbuildArchitecture: $(buildArch)
+              configuration: MinSizeRel
+
+          - publish: $(Build.BinariesDirectory)/bin
+            artifact: assimp_win_$(buildArch)
+
+  - stage: buildAssimpNet
+    displayName: Build AssimpNet
+    jobs:
+      - job: buildAssimpNet
+        displayName: Build AssimpNet
+        strategy:
+          matrix:
+            x86_64:
+              buildArch: x64
+              buildPlatform: x64
+            x86:
+              buildArch: x86
+              buildPlatform: x86
+        steps:
+          - download: current
+            artifact: assimp_win_$(buildArch)
+            displayName: Fetch native libs
+
+          - task: CopyFiles@2
+            displayName: Copy native libs
+            inputs:
+              sourceFolder: $(Pipeline.Workspace)/assimp_win_$(buildArch)
+              targetFolder: $(build.SourcesDirectory)/NativeLibs
+
+          - task: DotNetCoreCLI@2
+            displayName: Restore solution
+            inputs:
+              command: restore
+              feedsToUse: 'select'
+              includeNuGetOrg: true
+              projects: $(solution)
+
+          - task: DotNetCoreCLI@2
+            displayName: Build
+            inputs:
+              command: build
+              projects: $(solution)
+              arguments: -c $(buildConfiguration)
+
+          - task: DotNetCoreCLI@2
+            displayName: Test
+            inputs:
+              command: test
+              projects: $(solution)
+              arguments: -c $(buildConfiguration) -- RunConfiguration.TargetPlatform=$(buildPlatform)
