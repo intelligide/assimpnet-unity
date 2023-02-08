@@ -26,6 +26,7 @@
     <ApplicationIcon />
     <OutputType>Library</OutputType>
     <StartupObject />
+    <DefineConstants Condition="'$(StaticNativeLinking)' == 'true'">$(DefineConstants);STATIC_NATIVE_LINKING</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
